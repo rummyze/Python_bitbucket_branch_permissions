@@ -22,19 +22,26 @@ headers = {
 website = config.get('website','link')
 project = config.get('project','name')
 array = []
+users = config.get('users','alies')
+print(users)
+
 for key in config ['repo']:
     array.extend([key])
     print(array)
 
-users = config.get('users','alies')
-print(users)
-json_ = [
+def full_url(repo) :
+    url = website + '/rest/branch-permissions/2.0/projects/' + project + '/repos/'+ repo +'/restrictions'
+    return url
+    
+
+def json(users,brench,desplayId,type):
+    json = [
     {
         "id": 1,
-        "type": "no-deletes",
+        "type": type,
         "matcher": {
-            "id": config.get('branch','name'),
-            "displayId": "master",
+            "id": config.get(brench,'name'),
+            "displayId": desplayId,
             "type": {
             "id": "BRANCH",
             "name": "Branch"
@@ -44,39 +51,24 @@ json_ = [
         "users": users
         
     }]
-json_patern =  [{
-            "id": 2,
-            "type": "read-only",
-            "matcher": {
-                "id": config.get('pattern','name'),
-                "displayId": "/master**",
-                "type": {
-                    "id": "PATTERN",
-                    "name": "Pattern"
-                },
-                "active": true
-            },
-            "users": users
-        }
-    ]
-if config.has_option('',''):
-    config
-
-elif config.has_option('',''):
-    config
-
-elif config.has_option('',''):
-    config
-
-
-def full_url(repo) :
-    url = website + '/rest/branch-permissions/2.0/projects/' + project + '/repos/'+ repo +'/restrictions'
-    return url
     
+if config.has_section('branch') & config.has_section('pattern'):
+    for repo in array :
+        url = full_url(repo)
+        print(url)
+        r = requests.post(url=url, json=json , headers = headers)
+        print(r.status_code)
 
-for repo in array :
-    url = full_url(repo)
-    print(url)
-    r = requests.post(url=url, json=json_, headers = headers)
-    print(r.status_code)
-    
+elif config.has_section('pattern'):
+    for repo in array :
+        url = full_url(repo)
+        print(url)
+        r = requests.post(url=url, json=json , headers = headers)
+        print(r.status_code)
+
+elif config.has_section('branch'):
+    for repo in array :
+        url = full_url(repo)
+        print(url)
+        r = requests.post(url=url, json=json() , headers = headers)
+        print(r.status_code)
