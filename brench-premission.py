@@ -22,7 +22,7 @@ headers = {
 website = config.get('website','link')
 project = config.get('project','name')
 array = []
-users = config.get('users','alies')
+users = config.get('users','alias').split(",")
 print(users)
 
 for key in config ['repo']:
@@ -33,42 +33,33 @@ def full_url(repo) :
     url = website + '/rest/branch-permissions/2.0/projects/' + project + '/repos/'+ repo +'/restrictions'
     return url
     
-
-def json(users,brench,desplayId,type):
-    json = [
-    {
+def json(type_name,branch,type_id):
+    json = [{
         "id": 1,
-        "type": type,
+        "type": type_name,
         "matcher": {
-            "id": config.get(brench,'name'),
-            "displayId": desplayId,
+            "id": branch,
+            "displayId": branch,
             "type": {
-            "id": "BRANCH",
-            "name": "Branch"
+            "id": type_id.upper(),
+            "name": type_id.capitalize()
             },      
         "active": true
         },
         "users": users
-        
-    }]
-    
-if config.has_section('branch') & config.has_section('pattern'):
-    for repo in array :
-        url = full_url(repo)
-        print(url)
-        r = requests.post(url=url, json=json , headers = headers)
-        print(r.status_code)
+        }]
+    print (json)
+    return json
 
-elif config.has_section('pattern'):
-    for repo in array :
-        url = full_url(repo)
-        print(url)
-        r = requests.post(url=url, json=json , headers = headers)
-        print(r.status_code)
+def kakto (type):
+    r = requests.post(url=url, json=json(type_name='read-only',branch=config.get(type,'name'),type_id=type) , headers = headers)
+    print(r.status_code)
+    print(r.content )
 
-elif config.has_section('branch'):
-    for repo in array :
-        url = full_url(repo)
-        print(url)
-        r = requests.post(url=url, json=json() , headers = headers)
-        print(r.status_code)
+for repo in array :
+    url = full_url(repo)
+    print(url)
+    if config.has_section('pattern'):
+        kakto('pattern')
+    if config.has_section('branch'):
+        kakto('branch')
